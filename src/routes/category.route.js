@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const categoryController = require('../controllers/category.controller');
 const { validateCategory } = require('../middlewares/category.validation');
+const { verifyToken, verifyAdmin } = require('../middlewares/auth.middleware');
 
-// Giả định bạn có authMiddleware để phân quyền Admin (Nếu chưa có thể comment tạm)
-// const { verifyToken, verifyAdmin } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -17,8 +16,8 @@ router.get('/', categoryController.getCategories);
 router.get('/:id', categoryController.getCategory);
 
 // Bắt buộc đi qua middleware validation trước khi vào controller
-router.post('/', validateCategory, categoryController.createCategory);
-router.put('/:id', validateCategory, categoryController.updateCategory);
-router.delete('/:id', categoryController.deleteCategory);
+router.post('/', verifyToken, verifyAdmin, validateCategory, categoryController.createCategory);
+router.put('/:id', verifyToken, verifyAdmin, validateCategory, categoryController.updateCategory);
+router.delete('/:id', verifyToken, verifyAdmin, categoryController.deleteCategory);
 
 module.exports = router;
